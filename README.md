@@ -160,6 +160,7 @@ import makeWASocket from '@whiskeysockets/baileys'
     - [Get All Participating Groups Metadata](#get-all-participating-groups-metadata)
     - [Toggle Ephemeral](#toggle-ephemeral)
     - [Change Add Mode](#change-add-mode)
+    - [Send a Group Invite Message](#send-a-group-invite-message)
 - [Privacy](#privacy)
     - [Block/Unblock User](#blockunblock-user)
     - [Get Privacy Settings](#get-privacy-settings)
@@ -1116,6 +1117,26 @@ await sock.groupToggleEphemeral(jid, 86400)
 await sock.groupMemberAddMode(
     jid,
     'all_member_add' // or 'admin_add'
+)
+```
+
+### Send a Group Invite Message
+- If `sock.groupParticipantsUpdate(jid, [...], 'add')` could not add someone directly (the returned result's `status` is not `'200'`, for example when that person's privacy settings refuse being added to groups), you can invite them by sending a direct invite message they can tap to accept.
+```ts
+const inviteCode = await sock.groupInviteCode(groupJid)
+const inviteExpiration = Date.now() + 259200000 // e.g. expires 3 days from now, in milliseconds
+
+await sock.sendMessage(
+    jid,
+    {
+        groupInvite: {
+            jid: groupJid,
+            inviteCode,
+            inviteExpiration,
+            subject: 'My Group',
+            text: 'Join my group!'
+        }
+    }
 )
 ```
 
